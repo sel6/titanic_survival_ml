@@ -27,7 +27,7 @@ def add_bg_from_local(image_file):
     )
     
 def apk():
-    model = pickle.load(open("Models/survival_classifier.pkl", 'rb'))
+    model = pickle.load(open("survival_classifier.pkl", 'rb'))
     st.markdown("<h3 style='padding:2rem;text-align:left;color:black;font-size:1.8rem;border-radius:0.5rem;'>Survival Prediction</h3>", unsafe_allow_html=True)
     st.markdown("<p style='font-famly:Arial, Helvetica, sans-serif; color:black;'>By entering input parameters, the model outputs predicted Survival.</p1>", unsafe_allow_html=True)
     data = pd.DataFrame()
