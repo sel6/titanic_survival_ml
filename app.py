@@ -40,9 +40,9 @@ def apk():
     ('Female', 'Male'))
 
     if Sex == 'Female':
-        Sex = 0
+        sex == 0
     elif Sex == 'Male':
-        Sex = 1
+        sex == 1
 
     Parch = 0
     Parch = st.radio(
@@ -110,7 +110,7 @@ def apk():
         
     if calculate:
         try:
-            input_= [[id_, p, Sex, age, sib, Parch, fare, embark]]
+            input_= [[id_, p, sex, age, sib, Parch, fare, embark]]
             predict = model.predict(input_)
             if predict==0:
                 st.markdown("<h3 style='padding:2rem;text-align:left;color:red;font-size:1.8rem;border-radius:0.5rem;'>Died!</h3>", unsafe_allow_html=True) 
