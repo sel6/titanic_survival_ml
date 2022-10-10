@@ -1,5 +1,6 @@
 import mlflow
 import pandas as pd
+import os
 import time
 import mlflow.pyfunc
 from mlflow.entities.model_registry.model_version_status import ModelVersionStatus
@@ -8,9 +9,14 @@ from sklearn.datasets import load_iris
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+
+"""
+To start the mlflow server correctly:
+mlflow server --backend-store-uri postgresql+psycopg2://mlflow_user_t:mlflow@localhost/mlflow_db --default-artifact-root ./titanic_survival_ml/mlruns/ -h 0.0.0.0 -p 5004
+"""
 class ModelManagment:
 
-    def init_mlflow(experiment_name="exp_1"):
+    def init_mlflow(experiment_name="exp_1", tracking_path='postgresql+psycopg2://mlflow_user_t:mlflow@localhost/mlflow_db'):
         """
         This function handles the creation of experiment and a run session at
         a specified folder location.
@@ -21,9 +27,10 @@ class ModelManagment:
         Returns: 
             experiment_id(string): the id of the created experiment.
         """
+        os.environ['MLFLOW_TRACKING_URI'] = tracking_path
+        
         mlflow.end_run()
-        # set the tracking uri
-        # create the experiment with artifact path
+
         try:
             # try to create the experiment if it is new
             experiment_id = mlflow.create_experiment(
@@ -194,7 +201,7 @@ class ModelManagment:
                             )
 
 
-    def register_model(run_id, model_name, sqlite_db = "mydb.sqlite", desc="no description"):
+    def register_model(run_id, model_name, desc="no description"):
         """
         This function registers the model in the mlflow registry
         Args:
@@ -206,7 +213,8 @@ class ModelManagment:
         Returns:
             model_detials(obj): registered model details. 
         """
-        mlflow.set_registry_uri(f"sqlite:///{sqlite_db}")
+        
+        mlflow.set_registry_uri(f"postgresql+psycopg2://mlflow_user_t:mlflow@localhost/mlflow_db")
 
         artifact_path = "models"
         model_uri = "runs:/{run_id}/models".format(run_id=run_id)
@@ -233,21 +241,3 @@ class ModelManagment:
         
         return model_details
     
-    def log_model(artifact_name, model):
-        """
-        A function that logs necessary information of the model.
-        
-        Args:
-            artifact_name: name to save the model artifact  with
-            model: the model
-            
-        Returns:
-            model_uri
-        """
-        with mlflow.start_run():
-            mlflow.sklearn.log_model(sk_model=model, artifact_path=artifact_name)
-            run_id = mlflow.active_run().info.run_id
-            model_uri = "runs:/{run_id}/{artifact_path}".format(
-            run_id=run_id, artifact_path=artifact_name)
-            
-        return model_uri
